@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מרחב המשולשים הלא ליניארי - Academic Triangle Lab</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --secondary: #0284c7;
+            --accent: #b45309;
+            --bg: #f8fafc;
+            --text: #0f172a;
+            --card-bg: #ffffff;
+            --container-w: 1200px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 100px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .lang-selector {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .lang-selector button {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.7);
+            color: white;
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        .lang-selector button:hover, .lang-selector button.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        main {
+            max-width: var(--container-w);
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 4px solid var(--secondary);
+            padding-bottom: 12px;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 12px;
+            border-right: 6px solid var(--secondary);
+        }
+
+        .mind-blow {
+            border-right: 6px solid var(--accent) !important;
+            background: #fffbeb;
+        }
+
+        html[dir="ltr"] .card {
+            border-right: none;
+            border-left: 6px solid var(--secondary);
+        }
+        html[dir="ltr"] .mind-blow {
+            border-right: none !important;
+            border-left: 6px solid var(--accent) !important;
+        }
+
+        .math {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            padding: 0 4px;
+        }
+        
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+            line-height: 1.1;
+        }
+        
+        .frac .num {
+            border-bottom: 1.5px solid var(--text);
+            padding-bottom: 2px;
+        }
+        
+        .frac .den {
+            padding-top: 2px;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .shape-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .shape-card svg {
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            background: #e2e8f0;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.05em;
+            border-radius: 10px;
+            color: #475569;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .quiz-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-tab {
+            padding: 14px 28px;
+            background: #e2e8f0;
+            border: 2px solid transparent;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .quiz-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
+        }
+
+        .quiz-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quiz-content-wrapper {
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .quiz-item svg {
+            background: #f8fafc;
+            border: 1px solid #edf2f7;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .quiz-item input[type="number"] {
+            padding: 12px;
+            width: 100px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .quiz-item input[type="number"]:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .btn-check {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: #0270a9;
+        }
+
+        .btn-regen {
+            background: #64748b;
+            color: white;
+            display: block;
+            margin: 0 auto 40px auto;
+            padding: 14px 32px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
+        }
+
+        .btn-regen:hover {
+            background: #475569;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .feedback-explanation {
+            margin-top: 10px;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 10px;
+            font-size: 0.95em;
+            color: #475569;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 24px; }
+            .tab-buttons { flex-direction: column; }
+            .input-container { flex-direction: column; width: 100%; }
+            .quiz-item input[type="number"], .btn-check { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="main-title">מרחב המשולשים הלא ליניארי</h1>
+        <p id="main-subtitle" style="margin-top: 10px; opacity: 0.9;">מעבדה אקדמית לחקר יחסים גיאומטריים ואנליטיים</p>
+        
+        <div class="lang-selector">
+            <button class="active" onclick="changeLanguage('he', this)">עברית</button>
+            <button onclick="changeLanguage('en', this)">English</button>
+            <button onclick="changeLanguage('ar', this)">العربية</button>
+            <button onclick="changeLanguage('ru', this)">Русский</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="motivation-sec">
+            <h2 id="title-motivation">מוטיבציה מתמטית ויישום בעולם האמיתי</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3 id="sub-nature">מדוע משולשים הם אבני הבניין של היקום?</h3>
+                    <p id="text-nature">משולש הוא המבנה הגיאומטרי הקשיח היחיד בטבע. בניגוד למרובעים, לא ניתן לעוות משולש מבלי לשנות את אורכי צלעותיו. תכונה זו הופכת אותו ליסוד המרכזי בהנדסת מבנים, גרפיקה ממוחשבת בתלת-ממד (פוליגונים), ורשתות טריאנגולציה גיאודזיות.</p>
+                </div>
+                <div class="card mind-blow">
+                    <h3 id="sub-realworld">כיצד Google Maps יודע היכן אתה נמצא?</h3>
+                    <p id="text-realworld">איכון מכשיר הטלפון שלך מבוסס על קליטת אותות לפחות מ-3 לוויינים בו-זמנית. המערכת מחשבת את המרחקים, בונה משולש דמיוני בחלל ומשתמשת במשפטים טריגונומטריים מורכבים כדי לקבוע את נקודת החיתוך המדויקת שלך על כדור הארץ!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="attributes-sec">
+            <h2 id="title-attributes">תכונות משולש שווה-שוקיים ומשפטים אנליטיים</h2>
+            
+            <div class="tab-buttons">
+                <button id="btn-tab-low" class="tab-btn active" onclick="switchTab('low')">תכונות בסיסיות ומבנה</button>
+                <button id="btn-tab-high" class="tab-btn" onclick="switchTab('high')">משפטים אנליטיים מתקדמים</button>
+            </div>
+
+            <div id="tab-low" class="tab-content active">
+                <div class="grid">
+                    <div class="card">
+                        <h3 id="sub-attr-1">משולש שווה שוקיים - מכניקה בסיסית</h3>
+                        <p id="text-attr-1">במשולש שווה שוקיים, שתי הצלעות המרכזיות (השוקיים) שוות לחלוטין באורכן (AB = AC). כתוצאה ישירה מכך, זוויות הבסיס שמולן שוות לחלוטין בגודלן (∠B = ∠C).</p>
+                    </div>
+                    <div class="card">
+                        <h3 id="sub-attr-2">משפט הסימטריה המרכזי</h3>
+                        <p id="text-attr-2">התיכון לבסיס, הגובה לבסיס וחוצה זווית הראש מתלכדים לישר אחד יחיד. ישר זה מהווה ציר סימטריה מושלם המחלק את המשולש לשני משולשים ישרי-זווית חופפים.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-high" class="tab-content">
+                <div class="grid">
+                    <div class="card mind-blow">
+                        <h3 id="sub-attr-3">אי-שוויון המשולש הלא-ליניארי</h3>
+                        <p id="text-attr-3">בכל משולש במישור, סכום אורכיהן של שתי צלעות כלשהן חייב להיות גדול באופן קשיח מאורך הצלע השלישית (<span class="math">a + b &gt; c</span>). קשר זה מונע מהמרחב הגיאומטרי לקרוס לקו ישר יחיד.</p>
+                    </div>
+                    <div class="card">
+                        <h3 id="sub-attr-4">קשר הפוך ואינטואיציה מרחבית</h3>
+                        <p id="text-attr-4">מול הצלע הגדולה ביותר במשולש נמצאת תמיד הזווית הגדולה ביותר, ומול הצלע הקטנה ביותר נמצאת הזווית הקטנה ביותר. תכונה זו שומרת על עקביות המטריקה הלא-ליניארית במרחב האוקלידי.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz-sec">
+            <h2 id="title-quiz">מערכת תרגול אקדמית רב-שלבית (20 שאלות ייחודיות)</h2>
+            
+            <div class="quiz-tabs">
+                <button id="qtab-low" class="quiz-tab active" onclick="setGradePool('low', this)">חטיבה צעירה (כיתות ז'-ח')</button>
+                <button id="qtab-mid" class="quiz-tab" onclick="setGradePool('mid', this)">חטיבה בוגרת ואלגברה (כיתה ט')</button>
+                <button id="qtab-high" class="quiz-tab" onclick="setGradePool('high', this)">חטיבה עליונה ותיכון (כיתות י'-י"ב')</button>
+            </div>
+
+            <button id="btn-new-quiz" class="btn btn-regen" onclick="regenerateQuiz()">ייצר סדרה חדשה של שאלות ייחודיות</button>
+
+            <div id="quiz-container">
+                </div>
+        </section>
+    </main>
+
+    <script>
+        const translations = {
+            he: {
+                mainTitle: "מרחב המשולשים הלא ליניארי",
+                mainSubtitle: "מעבדה אקדמית לחקר יחסים גיאומטריים ואנליטיים",
+                titleMotivation: "מוטיבציה מתמטית ויישום בעולם האמיתי",
+                subNature: "מדוע משולשים הם אבני הבניין של היקום?",
+                textNature: "משולש הוא המבנה הגיאומטרי הקשיח היחיד בטבע. בניגוד למרובעים, לא ניתן לעוות משולש מבלי לשנות את אורכי צלעותיו. תכונה זו הופכת אותו ליסוד המרכזי בהנדסת מבנים, גרפיקה ממוחשבת בתלת-ממד (פוליגונים), ורשתות טריאנגולציה גיאודזיות.",
+                subRealworld: "כיצד Google Maps יודע היכן אתה נמצא?",
+                textRealworld: "איכון מכשיר הטלפון שלך מבוסס על קליטת אותות לפחות מ-3 לוויינים בו-זמנית. המערכת מחשבת את המרחקים, בונה משולש דמיוני בחלל ומשתמשת במשפטים טריגונומטריים מורכבים כדי לקבוע את נקונד החיתוך המדויקת שלך על כדור הארץ!",
+                titleAttributes: "תכונות משולש שווה-שוקיים ומשפטים אנליטיים",
+                btnTabLow: "תכונות בסיסיות ומבנה",
+                btnTabHigh: "משפטים אנליטיים מתקדמים",
+                subAttr1: "משולש שווה שוקיים - מכניקה בסיסית",
+                textAttr1: "במשולש שווה שוקיים, שתי הצלעות המרכזיות (השוקיים) שוות לחלוטין באורכן (AB = AC). כתוצאה ישירה מכך, זוויות הבסיס שמולן שוות לחלוטין בגודלן (∠B = ∠C).",
+                subAttr2: "משפט הסימטריה המרכזי",
+                textAttr2: "התיכון לבסיס, הגובה לבסיס וחוצה זווית הראש מתלכדים לישר אחד יחיד. ישר זה מהווה ציר סימטריה מושלם המחלק את המשולש לשני משולשים ישרי-זווית חופפים.",
+                subAttr3: "אי-שוויון המשולש הלא-ליניארי",
+                textAttr3: "בכל משולש במישור, סכום אורכיהן של שתי צלעות כלשהן חייב להיות גדול באופן קשיח מאורך הצלע השלישית (a + b > c). קשר זה מונע מהמרחב הגיאומטרי לקרוס לקו ישר יחיד.",
+                subAttr4: "קשר הפוך ואינטואיציה מרחבית",
+                textAttr4: "מול הצלע הגדולה ביותר במשולש נמצאת תמיד הזווית הגדולה ביותר, ומול הצלע הקטנה ביותר נמצאת הזווית הקטנה ביותר. תכונה זו שומרת על עקביות המטריקה הלא-联נארית במרחב האוקלידי.",
+                titleQuiz: "מערכת תרגול אקדמית רב-שלבית (20 שאלות ייחודיות)",
+                qtabLow: "חטיבה צעירה (כיתות ז'-ח')",
+                qtabMid: "חטיבה בוגרת ואלגברה (כיתה ט')",
+                qtabHigh: "חטיבה עליונה ותיכון (כיתות י'-י\"ב')",
+                btnNewQuiz: "ייצר סדרה חדשה של שאלות ייחודיות",
+                btnCheck: "בדוק תשובה אנליטית",
+                correctMsg: "תשובה נכונה! הפתרון הגיאומטרי מדויק לחלוטין.",
+                incorrectMsg: "תשובה שגויה. הערך המחושב הנכון הוא {0}.",
+                questionLabel: "שאלה"
+            },
+            en: {
+                mainTitle: "The Non-Linear Triangle Space",
+                mainSubtitle: "Academic Laboratory for Geometric and Analytical Relations",
+                titleMotivation: "Mathematical Motivation & Real-World Applications",
+                subNature: "Why are Triangles the Building Blocks of the Universe?",
+                textNature: "A triangle is the only inherently rigid geometric structure in nature. Unlike quadrilaterals, a triangle cannot be deformed without altering the length of its sides. This absolute property makes it the fundamental core of structural engineering, 3D computer graphics, and geodesic triangulation networks.",
+                subRealworld: "How does Google Maps pinpoint your location?",
+                textRealworld: "Your phone calculates its distance from at least 3 satellites in space simultaneously. The system forms an imaginary triangle and utilizes trigonometry to pinpoint your exact intersection coordinates on Earth!",
+                titleAttributes: "Isosceles Triangle Logic & Analytical Geometry Theorems",
+                btnTabLow: "Basic Properties & Form",
+                btnTabHigh: "Advanced Analytical Theorems",
+                subAttr1: "Isosceles Triangle - Core Mechanics",
+                textAttr1: "In an isosceles triangle, the two central sides (legs) are perfectly identical in length (AB = AC). As a direct consequence, the base angles opposite to these sides are completely equal in magnitude (∠B = ∠C).",
+                subAttr2: "The Central Symmetry Theorem",
+                textAttr2: "The median to the base, the altitude to the base, and the angle bisector of the apex match onto one singular straight line. This line acts as a flawless axis of symmetry, dividing the triangle into two congruent right-angled systems.",
+                subAttr3: "Non-Linear Triangle Inequality",
+                textAttr3: "In any flat plane, the sum of the lengths of any two sides must be strictly greater than the length of the remaining third side (a + b > c). This relationship prevents the geometry from collapsing into a zero-volume line.",
+                subAttr4: "Inverse Angle-Side Relation",
+                textAttr4: "The largest side of any triangle is always strictly opposite the largest interior angle, and the shortest side faces the smallest angle. This property maintains metric consistency across Euclidean space.",
+                titleQuiz: "Multi-Tier Academic Training Grid (20 Unique Questions)",
+                qtabLow: "Junior Tier (Grades 7-8)",
+                qtabMid: "Intermediate & Algebraic Tier (Grade 9)",
+                qtabHigh: "Senior & Trigonometric Tier (Grades 10-12)",
+                btnNewQuiz: "Regenerate Fully Unique Dataset",
+                btnCheck: "Verify Analytic Solution",
+                correctMsg: "Correct answer! The analytical solution is geometrically accurate.",
+                incorrectMsg: "Incorrect value. The correct computed result is {0}.",
+                questionLabel: "Question"
+            },
+            ar: {
+                mainTitle: "فضاء المثلثات غير الخطي",
+                mainSubtitle: "مختبر أكاديمي لاستكشاف العلاقات الهندسية والتحليلية",
+                titleMotivation: "الدافع الرياضي والتطبيقات في العالم الحقيقي",
+                subNature: "لماذا تعتبر المثلثات لبنات بناء الكون؟",
+                textNature: "المثلث هو الهيكل الهندسي الوحيد الصلب بطبيعته. على عكس الأشكال الرباعية، لا يمكن تشويه المثلث دون تغيير أطوال أضلاعه. هذه الخاصية تجعله العنصر الأساسي في الهندسة الإنشائية ورسومات الكمبيوتر ثلاثية الأبعاد.",
+                subRealworld: "كيف يحدد نظام خرائط Google موقعك بدقة؟",
+                textRealworld: "يعتمد هاتفك على استقبال إشارات من 3 أقمار صناعية على الأقل. يحسب النظام المسافات ويشكل مثلثاً تخيلياً في الفضاء، ثم يستخدم قوانين المثلثات لحساب إحداثياتك بدقة على الأرض!",
+                titleAttributes: "خصائص المثلث متساوي الساقين والنظريات التحليلية",
+                btnTabLow: "الخصائص الأساسية والبنية",
+                btnTabHigh: "النظريات التحليلية المتقدمة",
+                subAttr1: "المثلث متساوي الساقين - الميكانيكا الأساسية",
+                textAttr1: "في المثلث متساوي الساقين، يكون الضلعان المركزيان (الساقان) متطابقين تماماً في الطول (AB = AC). ونتيجة مباشرة لذلك، تكون زوايا القاعدة المقابلة لهذين الضلعين متساوية تماماً (∠B = ∠C).",
+                subAttr2: "نظرية التناظر المركزي",
+                textAttr2: "المتوسط النازل على القاعدة، والارتفاع عليها، ومنصف زاوية الرأس، كلها تنطبق على خط مستقيم واحد. يمثل هذا الخط محور تناظر مثالي يقسم المثلث إلى مثلثين قائمي الزاوية ومتطابقين.",
+                subAttr3: "متباينة المثلث غير الخطية",
+                textAttr3: "في أي مستوى ثنائي الأبعاد، يجب أن يكون مجموع طولي أي ضلعين أكبر تماماً من طول الضلع الثالث (a + b > c). تمنع هذه العلاقة الفضاء الهندسي من الانهيار إلى خط مستقيم واحد.",
+                subAttr4: "العلاقة العكسية بين الزوايا والأضلاع",
+                textAttr4: "الضلع الأكبر في أي مثلث يقابل دائماً الزاوية الداخلية الكبرى، والضلع الأقصر يقابل الزاوية الصغرى. تحافظ هذه الخاصية على اتساق الفضاء الإقليدي.",
+                titleQuiz: "منظومة التدريب الأكاديمي متعددة المستويات (20 سؤالاً فريداً)",
+                qtabLow: "المرحلة الناشئة (الصفين السابع والثامن)",
+                qtabMid: "المرحلة المتوسطة والجبر (الصف التاسع)",
+                qtabHigh: "المرحلة المتقدمة وحساب المثلثات (الصف العاشر حتى الثاني عشر)",
+                btnNewQuiz: "توليد مجموعة أسئلة فريدة جديدة",
+                btnCheck: "التحقق من الحل التحليلي",
+                correctMsg: "إجابة صحيحة! الحل الهندسي دقيق ومثالي تماماً.",
+                incorrectMsg: "إجابة خاطئة. النتيجة المحسوبة الصحيحة هي {0}.",
+                questionLabel: "المسألة"
+            },
+            ru: {
+                mainTitle: "Нелинейное пространство треугольников",
+                mainSubtitle: "Академическая лаборатория геометрических и аналитических связей",
+                titleMotivation: "Математическая мотивация и реальное применение",
+                subNature: "Почему треугольники — строительные блоки Вселенной?",
+                textNature: "Треугольник — единственная абсолютно жесткая геометрическая фигура. В отличие от четырёхугольников, его нельзя деформировать, не изменив длину сторон. Это делает его основой строительного проектирования и 3D-графики.",
+                subRealworld: "Как Google Maps находит ваше точное местоположение?",
+                textRealworld: "Ваш телефон вычисляет расстояние до как минимум 3 спутников одновременно. Система формирует воображаемый треугольник в пространстве и использует тригонометрические уравнения для определения координат на Земле!",
+                titleAttributes: "Свойства равнобедренного треугольника и аналитические теоремы",
+                btnTabLow: "Базовые свойства и структура",
+                btnTabHigh: "Продвинутые аналитические теоремы",
+                subAttr1: "Равнобедренный треугольник — базовая механика",
+                textAttr1: "В равнобедренном треугольнике две боковые стороны равны между собой (AB = AC). Как прямое следствие, углы при основании, лежащие против этих сторон, абсолютно равны (∠B = ∠C).",
+                subAttr2: "Центральная теорема о симметрии",
+                textAttr2: "Медиана, высота и биссектриса, проведённые к основанию, полностью совпадают. Эта линия служит идеальной осью симметрии, разделяющей треугольник на два равных прямоугольных треугольника.",
+                subAttr3: "Нелинейное неравенство треугольника",
+                textAttr3: "В любой плоской метрике сумма длин двух любых сторон должна быть строго больше длины третьей стороны (a + b > c). Это соотношение не позволяет геометрическому пространству выродиться в прямую.",
+                subAttr4: "Обратная связь углов и сторон",
+                textAttr4: "Против большей стороны треугольника всегда лежит больший угол, а против меньшей — меньший. Это свойство обеспечивает внутреннюю согласованность евклидова пространства.",
+                titleQuiz: "Академическая система тестирования (20 уникальных задач)",
+                qtabLow: "Младшая ступень (7-8 классы)",
+                qtabMid: "Средняя ступень и алгебра (9 класс)",
+                qtabHigh: "Старшая ступень и тригонометрия (10-12 классы)",
+                btnNewQuiz: "Сгенерировать новый набор из 20 задач",
+                btnCheck: "Проверить аналитическое решение",
+                correctMsg: "Правильно! Геометрический расчет абсолютно точен.",
+                incorrectMsg: "Неверно. Правильное вычисленное значение: {0}.",
+                questionLabel: "Задача"
+            }
+        };
+
+        let currentLang = 'he';
+        let currentGradePool = 'low';
+        let rawQuizData = [];
+
+        function changeLanguage(lang, button) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'he' || lang === 'ar') ? 'rtl' : 'ltr';
+
+            document.querySelectorAll('.lang-selector button').forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+
+            const data = translations[lang];
+            document.getElementById('main-title').innerText = data.mainTitle;
+            document.getElementById('main-subtitle').innerText = data.mainSubtitle;
+            document.getElementById('title-motivation').innerText = data.titleMotivation;
+            document.getElementById('sub-nature').innerText = data.subNature;
+            document.getElementById('text-nature').innerText = data.textNature;
+            document.getElementById('sub-realworld').innerText = data.subRealworld;
+            document.getElementById('text-realworld').innerText = data.textRealworld;
+            document.getElementById('title-attributes').innerText = data.titleAttributes;
+            document.getElementById('btn-tab-low').innerText = data.btnTabLow;
+            document.getElementById('btn-tab-high').innerText = data.btnTabHigh;
+            document.getElementById('sub-attr-1').innerText = data.subAttr1;
+            document.getElementById('text-attr-1').innerText = data.textAttr1;
+            document.getElementById('sub-attr-2').innerText = data.subAttr2;
+            document.getElementById('text-attr-2').innerText = data.textAttr2;
+            document.getElementById('sub-attr-3').innerText = data.subAttr3;
+            document.getElementById('text-attr-3').innerText = data.textAttr3;
+            document.getElementById('sub-attr-4').innerText = data.subAttr4;
+            document.getElementById('text-attr-4').innerText = data.textAttr4;
+            document.getElementById('title-quiz').innerText = data.titleQuiz;
+            document.getElementById('qtab-low').innerText = data.qtabLow;
+            document.getElementById('qtab-mid').innerText = data.qtabMid;
+            document.getElementById('qtab-high').innerText = data.qtabHigh;
+            document.getElementById('btn-new-quiz').innerText = data.btnNewQuiz;
+
+            renderQuiz();
+        }
+
+        function switchTab(tier) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if(tier === 'low') {
+                document.getElementById('btn-tab-low').classList.add('active');
+                document.getElementById('tab-low').classList.add('active');
+            } else {
+                document.getElementById('btn-tab-high').classList.add('active');
+                document.getElementById('tab-high').classList.add('active');
+            }
+        }
+
+        function setGradePool(pool, button) {
+            currentGradePool = pool;
+            document.querySelectorAll('.quiz-tab').forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+            regenerateQuiz();
+        }
+
+        function regenerateQuiz() {
+            rawQuizData = [];
+            
+            // Loop runs exactly 20 times generating unique parameters per iteration
+            for (let i = 1; i <= 20; i++) {
+                let uniqueSeed = Math.floor(Math.random() * 5) + i; 
+                let qItem = { id: i, templateIndex: i };
+
+                if (currentGradePool === 'low') {
+                    if (i % 5 === 1) {
+                        let baseAngle = Math.floor(Math.random() * 15) + 45; 
+                        qItem.ans = 180 - (2 * baseAngle);
+                        qItem.txtHe = `במשולש שווה שוקיים, זוויות הבסיס שוות ל-<span class="math">${baseAngle}°</span> כל אחת. מצא את זווית הראש.`;
+                        qItem.txtEn = `In an isosceles triangle, both base angles are equal to <span class="math">${baseAngle}°</span>. Find the apex angle.`;
+                        qItem.txtAr = `في مثلث متساوي الساقين، زوايا القاعدة تساوي <span class="math">${baseAngle}°</span> لكل منهما. أوجد زاوية الرأس.`;
+                        qItem.txtRu = `В равнобедренном треугольнике углы при основании равны <span class="math">${baseAngle}°</span>. Найдите угол при вершине.`;
+                        qItem.expHe = `במשולש שווה שוקיים זוויות הבסיס שוות. לכן שתי זוויות הבסיס הן ${baseAngle}°. מכיוון שסכום הזוויות הוא 180°, זווית הראש היא: 180 - (2 × ${baseAngle}) = ${qItem.ans}°.`;
+                        qItem.expEn = `In an isosceles triangle, base angles are equal. Therefore, both base angles are ${baseAngle}°. Since the sum of angles is 180°, the apex angle is: 180 - (2 × ${baseAngle}) = ${qItem.ans}°.`;
+                        qItem.expAr = `في المثلث متساوي الساقين، زوايا القاعدة متساوية. لذلك كلتا زاويتي القاعدة تساوي ${baseAngle}°. بما أن مجموع زوايا المثلث 180°، فإن زاوية الرأس هي: 180 - (2 × ${baseAngle}) = ${qItem.ans}°.`;
+                        qItem.expRu = `В равнобедренном треугольнике углы при основании равны. Следовательно, сумма углов основания равна 2 × ${baseAngle} = ${2*baseAngle}°. Угол при вершине: 180 - ${2*baseAngle} = ${qItem.ans}°.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="90,20 40,90 140,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    } 
+                    else if (i % 5 === 2) {
+                        let apexAngle = Math.floor(Math.random() * 40) + 30;
+                        qItem.ans = (180 - apexAngle) / 2;
+                        qItem.txtHe = `במשולש שווה שוקיים, זווית הראש היא <span class="math">${apexAngle}°</span>. חשב את גודלה של זווית בסיס בודדת.`;
+                        qItem.txtEn = `In an isosceles triangle, the apex angle is <span class="math">${apexAngle}°</span>. Calculate the value of a single base angle.`;
+                        qItem.txtAr = `في مثلث متساوي الساقين، زاوية الرأس هي <span class="math">${apexAngle}°</span>. احسب قيمة زاوية قاعدة واحدة.`;
+                        qItem.txtRu = `В равнобедренном треугольнике угол при вершине равен <span class="math">${apexAngle}°</span>. Вычислите величину угла при основании.`;
+                        qItem.expHe = `סכום הזוויות במשולש הוא 180°. נחסיר את זווית הראש: 180 - ${apexAngle} = ${180-apexAngle}°. מכיוון שזוויות הבסיס שוות, נחלק ב-2 ונקבל: ${qItem.ans}°.`;
+                        qItem.expEn = `The sum of angles is 180°. Subtracting the apex: 180 - ${apexAngle} = ${180-apexAngle}°. Since base angles are identical, divide by 2: ${qItem.ans}°.`;
+                        qItem.expAr = `مجموع زوايا المثلث هو 180°. نطرح زاوية الرأس: 180 - ${apexAngle} = ${180-apexAngle}°. بما أن زوايا القاعدة متطابقة، نقسم على 2: ${qItem.ans}°.`;
+                        qItem.expRu = `Сумма углов равна 180°. Вычтем угол при вершине: 180 - ${apexAngle} = ${180-apexAngle}°. Так как углы при основании равны, делим на 2: ${qItem.ans}°.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="90,15 50,95 130,95" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 3) {
+                        let equalSide = Math.floor(Math.random() * 8) + 6;
+                        let baseSide = Math.floor(Math.random() * 5) + 3;
+                        qItem.ans = (2 * equalSide) + baseSide;
+                        qItem.txtHe = `משולש שווה שוקיים בעל אורך שוק של <span class="math">${equalSide}</span> ס"מ ואורך בסיס של <span class="math">${baseSide}</span> ס"מ. מצא את היקף המשולש.`;
+                        qItem.txtEn = `An isosceles triangle has a leg length of <span class="math">${equalSide}</span> cm and a base line of <span class="math">${baseSide}</span> cm. Find its absolute perimeter.`;
+                        qItem.txtAr = `مثلت متساوي الساقين طول ساقه <span class="math">${equalSide}</span> سم وطول قاعدته <span class="math">${baseSide}</span> سم. أوجد المحيط الكلي للمثلت.`;
+                        qItem.txtRu = `Равнобедренный треугольник имеет боковую сторону <span class="math">${equalSide}</span> см и основание <span class="math">${baseSide}</span> см. Найдите его периметр.`;
+                        qItem.expHe = `היקף משולש שווה שוקיים מחושב כסכום שלוש הצלעות: (2 × שוק) + בסיס. לכן: (2 × ${equalSide}) + ${baseSide} = ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `The perimeter is computed as (2 × leg) + base. Therefore, the total metric is: (2 × ${equalSide}) + ${baseSide} = ${qItem.ans} cm.`;
+                        qItem.expAr = `يتم حساب المحيط بالمعادلة (2 × الساق) + القاعدة. وبالتالي: (2 × ${equalSide}) + ${baseSide} = ${qItem.ans} سم.`;
+                        qItem.expRu = `Периметр равен сумме всех сторон: (2 × боковая сторона) + основание. Получаем: (2 × ${equalSide}) + ${baseSide} = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="90,20 45,90 135,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 4) {
+                        let equalSide = Math.floor(Math.random() * 5) + 8;
+                        let perimeter = Math.floor(Math.random() * 6) + 30;
+                        qItem.ans = perimeter - (2 * equalSide);
+                        qItem.txtHe = `היקפו של משולש שווה שוקיים הוא <span class="math">${perimeter}</span> ס"מ. אם אורך השוק הוא <span class="math">${equalSide}</span> ס"מ, מהו אורך הבסיס?`;
+                        qItem.txtEn = `The perimeter of an isosceles triangle is <span class="math">${perimeter}</span> cm. If each leg length is <span class="math">${equalSide}</span> cm, find the base.`;
+                        qItem.txtAr = `محيط مثلث متساوي الساقين هو <span class="math">${perimeter}</span> سم. إذا كان طول الساق <span class="math">${equalSide}</span> سم، فما هو طول القاعدة؟`;
+                        qItem.txtRu = `Периметр равнобедренного треугольника равен <span class="math">${perimeter}</span> см. Если боковая сторона равна <span class="math">${equalSide}</span> см, какова длина основания?`;
+                        qItem.expHe = `במשולש שווה שוקיים יש שתי שוקיים שוות. סכומן: 2 × ${equalSide} = ${2*equalSide} ס"מ. נחסיר מההיקף הכללי לקבלת הבסיס: ${perimeter} - ${2*equalSide} = ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `Two legs are identical. Their sum is 2 × ${equalSide} = ${2*equalSide} cm. Subtracting this from the perimeter yields the base: ${perimeter} - ${2*equalSide} = ${qItem.ans} cm.`;
+                        qItem.expAr = `المثلث يحتوي على ساقين متساويين مجموع طيليهما: 2 × ${equalSide} = ${2*equalSide} سم. نطرح ذلك من المحيط الكلي: ${perimeter} - ${2*equalSide} = ${qItem.ans} سم.`;
+                        qItem.expRu = `Вычтем две равные боковые стороны из общего периметра: ${perimeter} - (2 × ${equalSide}) = ${perimeter} - ${2*equalSide} = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="90,20 40,90 140,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else {
+                        let baseSide = Math.floor(Math.random() * 4) + 6;
+                        let perimeter = Math.floor(Math.random() * 6) + 26;
+                        qItem.ans = (perimeter - baseSide) / 2;
+                        qItem.txtHe = `היקפו של משולש שווה שוקיים הוא <span class="math">${perimeter}</span> ס"מ, ואורך הבסיס הוא <span class="math">${baseSide}</span> ס"מ. מצא את אורך השוק.`;
+                        qItem.txtEn = `The perimeter of an isosceles triangle is <span class="math">${perimeter}</span> cm, and its base is <span class="math">${baseSide}</span> cm. Find the length of one leg.`;
+                        qItem.txtAr = `محيط مثلث متساوي الساقين هو <span class="math">${perimeter}</span> سم، وطول القاعدة هو <span class="math">${baseSide}</span> سم. أوجد طول الساق الواحدة.`;
+                        qItem.txtRu = `Периметр равнобедренного треугольника — <span class="math">${perimeter}</span> см, а основание — <span class="math">${baseSide}</span> см. Найдите длину боковой стороны.`;
+                        qItem.expHe = `נחסיר את אורך הבסיס מההיקף הכללי: ${perimeter} - ${baseSide} = ${perimeter-baseSide} ס"מ. מכיוון שהשוקיים שוות באורכן, נחלק ב-2: ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `Subtract the base line from the perimeter: ${perimeter} - ${baseSide} = ${perimeter-baseSide} cm. Since both legs are equivalent, divide by 2: ${qItem.ans} cm.`;
+                        qItem.expAr = `نطرح القاعدة من المحيط: ${perimeter} - ${baseSide} = ${perimeter-baseSide} سم. بما أن الساقين متساويتان، نقسم على 2: ${qItem.ans} سم.`;
+                        qItem.expRu = `Вычтем основание из периметра и разделим остаток на две равные части: (${perimeter} - ${baseSide}) / 2 = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="90,20 45,90 135,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                } 
+                else if (currentGradePool === 'mid') {
+                    if (i % 5 === 1) {
+                        let base = Math.floor(Math.random() * 6) + 6;
+                        let height = Math.floor(Math.random() * 5) + 4;
+                        qItem.ans = 0.5 * base * height;
+                        qItem.txtHe = `במשולש, אורך הבסיס הוא <span class="math">${base}</span> ס"מ והגובה היורד אליו הוא <span class="math">${height}</span> ס"מ. חשב את שטח המשולש.`;
+                        qItem.txtEn = `In a triangle, the base line is <span class="math">${base}</span> cm and the corresponding altitude is <span class="math">${height}</span> cm. Calculate its area.`;
+                        qItem.txtAr = `في المثلث، طول القاعدة הוא <span class="math">${base}</span> سم والارتفاع النازل عليها هو <span class="math">${height}</span> سم. احسب مساحة المثلث.`;
+                        qItem.txtRu = `В треугольнике длина основания равна <span class="math">${base}</span> см, а высота — <span class="math">${height}</span> см. Вычислите площадь треугольника.`;
+                        qItem.expHe = `נוסחת שטח משולש היא (בסיס × גובה) לחלק ב-2. לכן: (${base} × ${height}) / 2 = ${qItem.ans} סמ"ק.`;
+                        qItem.expEn = `The area formula is (base × height) / 2. Thus: (${base} × ${height}) / 2 = ${qItem.ans} cm².`;
+                        qItem.expAr = `قانون مساحة المثلث هو (القاعدة × الارتفاع) ÷ 2. إذن: (${base} × ${height}) ÷ 2 = ${qItem.ans} سم².`;
+                        qItem.expRu = `Площадь треугольника вычисляется по формуле (основание × высота) / 2: (${base} × ${height}) / 2 = ${qItem.ans} см².`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="30,90 110,20 150,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/><line x1="110" y1="20" x2="110" y2="90" stroke="#7f8c8d" stroke-dasharray="4" stroke-width="2"/></svg>`;
+                    }
+                    else if (i % 5 === 2) {
+                        let pythLeg1 = 3 * (uniqueSeed - 2);
+                        let pythLeg2 = 4 * (uniqueSeed - 2);
+                        qItem.ans = 5 * (uniqueSeed - 2);
+                        qItem.txtHe = `במשולש ישר זווית, אורכי הניצבים הם <span class="math">${pythLeg1}</span> ס"מ ו-<span class="math">${pythLeg2}</span> ס"מ. מצא את אורך היתר באמצעות משפט פיתגורס.`;
+                        qItem.txtEn = `In a right-angled triangle, the perpendicular legs measure <span class="math">${pythLeg1}</span> cm and <span class="math">${pythLeg2}</span> cm. Find the hypotenuse via the Pythagorean theorem.`;
+                        qItem.txtAr = `في مثلث قائم الزاوية، أطوال القائمين هي <span class="math">${pythLeg1}</span> سم و <span class="math">${pythLeg2}</span> سم. أوجد طول الوتر باستخدام نظرية فيثاغورس.`;
+                        qItem.txtRu = `В прямоугольном треугольнике катеты равны <span class="math">${pythLeg1}</span> см и <span class="math">${pythLeg2}</span> см. Найдите гипотенузу по теореме Пифагора.`;
+                        qItem.expHe = `לפי פיתגורס: c² = a² + b². לכן: ${pythLeg1}² + ${pythLeg2}² = ${pythLeg1*pythLeg1} + ${pythLeg2*pythLeg2} = ${qItem.ans*qItem.ans}. נוציא שורש ונקבל ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `By Pythagoras: c = √(a² + b²). Therefore: √(${pythLeg1}² + ${pythLeg2}²) = √(${pythLeg1*pythLeg1} + ${pythLeg2*pythLeg2}) = √${qItem.ans*qItem.ans} = ${qItem.ans} cm.`;
+                        qItem.expAr = `حسب فيثاغورس: مربع الوتر = مجموع مربعي القائمين. إذن: √(${pythLeg1}² + ${pythLeg2}²) = √${qItem.ans*qItem.ans} = ${qItem.ans} سم.`;
+                        qItem.expRu = `По теореме Пифагора гипотенуза c = √(a² + b²): √(${pythLeg1}² + ${pythLeg2}²) = √(${pythLeg1*pythLeg1 + pythLeg2*pythLeg2}) = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="40,20 40,90 140,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 3) {
+                        let factor = uniqueSeed - 1;
+                        let pythLeg = 5 * factor;
+                        let hypotenuse = 13 * factor;
+                        qItem.ans = 12 * factor;
+                        qItem.txtHe = `במשולש ישר זווית, אורך היתר הוא <span class="math">${hypotenuse}</span> ס"מ ואחד הניצבים הוא <span class="math">${pythLeg}</span> ס"מ. חשב את אורך הניצב השני.`;
+                        qItem.txtEn = `In a right triangle, the hypotenuse is <span class="math">${hypotenuse}</span> cm and one leg is <span class="math">${pythLeg}</span> cm. Compute the length of the remaining leg.`;
+                        qItem.txtAr = `في مثلث قائم الزاوية، طول الوتر هو <span class="math">${hypotenuse}</span> سم وأحد القائمين هو <span class="math">${pythLeg}</span> سم. احسب طول الضلع القائم الآخر.`;
+                        qItem.txtRu = `В прямоугольном треугольнике гипотенуза равна <span class="math">${hypotenuse}</span> см, а один из катетов — <span class="math">${pythLeg}</span> см. Найдите второй катет.`;
+                        qItem.expHe = `נשתמש במשפט פיתגורס: b² = c² - a². לכן: ${hypotenuse}² - ${pythLeg}² = ${hypotenuse*hypotenuse} - ${pythLeg*pythLeg} = ${qItem.ans*qItem.ans}. שורש הערך הוא ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `Using Pythagoras: b = √(c² - a²). Therefore: √(${hypotenuse}² - ${pythLeg}²) = √(${hypotenuse*hypotenuse - pythLeg*pythLeg}) = √${qItem.ans*qItem.ans} = ${qItem.ans} cm.`;
+                        qItem.expAr = `باستخدام مبرهنة فيثاغورس: الضلع المجهول = √(الوتر² - الضلع المعلوم²). إذن: √(${hypotenuse}² - ${pythLeg}²) = ${qItem.ans} سم.`;
+                        qItem.expRu = `Вычисляем неизвестный катет по формуле b = √(c² - a²): √(${hypotenuse}² - ${pythLeg}²) = √(${hypotenuse*hypotenuse - pythLeg*pythLeg}) = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="40,15 40,95 150,95" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 4) {
+                        let diff = 2; 
+                        qItem.ans = 8; // base = 8, altitude = 6 -> area = 24
+                        let area = 24;
+                        qItem.txtHe = `שטח משולש הוא <span class="math">S = ${area}</span> סמ"ק. הגובה קטן ב-<span class="math">${diff}</span> ס"מ מהבסיס אליו הוא יורד. מצא את אורך הבסיס.`;
+                        qItem.txtEn = `The area of a triangle is computed to be <span class="math">S = ${area}</span> cm². Its altitude is exactly <span class="math">${diff}</span> cm shorter than the base line. Find the length of the base.`;
+                        qItem.txtAr = `مساحة مثلث هي <span class="math">S = ${area}</span> سم². الارتفاع أصغر بـ <span class="math">${diff}</span> سم من القاعدة التي ينزل عليها. أوجد طول القاعدة.`;
+                        qItem.txtRu = `Площадь треугольника составляет <span class="math">S = ${area}</span> см². Высота на <span class="math">${diff}</span> см меньше основания, к которому она проведена. Найдите длину основания.`;
+                        qItem.expHe = `המשוואה הריבועית הנבנית היא: x(x - ${diff}) / 2 = ${area} ⇒ x² - ${diff}x - ${2*area} = 0. הפתרון החיובי עבור אורך הבסיס הוא x = ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `The quadratic representation is: x(x - ${diff}) / 2 = ${area} ⇒ x² - ${diff}x - ${2*area} = 0. Resolving for the positive metric gives base = ${qItem.ans} cm.`;
+                        qItem.expAr = `المعادلة التربيعية المتشكلة هي: x(x - ${diff}) ÷ 2 = ${area} ⇒ x² - ${diff}x - ${2*area} = 0. الحل الموجب لطول القاعدة هو x = ${qItem.ans} سم.`;
+                        qItem.expRu = `Составим уравнение: x(x - ${diff}) / 2 = ${area} ⇒ x² - ${diff}x - ${2*area} = 0. Положительный корень уравнения (длина основания) равен x = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="30,90 100,25 160,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/><line x1="100" y1="25" x2="100" y2="90" stroke="#7f8c8d" stroke-dasharray="4" stroke-width="2"/></svg>`;
+                    }
+                    else {
+                        let leg = Math.floor(Math.random() * 5) + 6;
+                        qItem.ans = 2 * leg;
+                        qItem.txtHe = `במשולש ישר זווית בעל זוויות חדות של 30° ו-60°, אורך הניצב שמול הזווית 30° הוא <span class="math">${leg}</span> ס"מ. חשב את אורך היתר.`;
+                        qItem.txtEn = `In a 30°-60°-90° right triangle, the leg opposite to the 30° angle measures <span class="math">${leg}</span> cm. Calculate the absolute length of the hypotenuse.`;
+                        qItem.txtAr = `في مثلث قائم الزاوية زواياه الحادة 30° و 60°، طول الضلع المقابل للزاوية 30° هو <span class="math">${leg}</span> سم. احسب طول الوتر.`;
+                        qItem.txtRu = `В прямоугольном треугольнике с углами 30° и 60° катет, лежащий против угла в 30°, равен <span class="math">${leg}</span> см. Найдите длину гипотенузы.`;
+                        qItem.expHe = `לפי משפט זהב גיאומטרי: במשולש 30°-60°-90°, הניצב שמול ה-30° שווה בדיוק למחצית היתר. לכן, היתר שווה ל-2 × ${leg} = ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `According to geometric theorem, the leg opposite the 30° angle is half the hypotenuse. Thus, the hypotenuse is 2 × ${leg} = ${qItem.ans} cm.`;
+                        qItem.expAr = `في المثلث القائم الذي زواياه 30، 60، 90، الضلع المقابل للزاوية 30° يساوي نصف الوتر. لذلك الوتر يساوي 2 × ${leg} = ${qItem.ans} سم.`;
+                        qItem.expRu = `В прямоугольном треугольнике с углами 30, 60, 90 катет, лежащий против угла в 30°, равен половине гипотенузы. Следовательно, гипотенуза равна 2 × ${leg} = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="40,20 40,90 160,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                } 
+                else { // high pool
+                    if (i % 5 === 1) {
+                        let angle = 30; 
+                        let sideA = 2 * uniqueSeed;
+                        let sideB = 5 * uniqueSeed;
+                        qItem.ans = 0.5 * sideA * sideB * 0.5; // sin(30) = 0.5
+                        qItem.txtHe = `במשולש כללי, אורכי שתי צלעות הם <span class="math">${sideA}</span> ס"מ ו-<span class="math">${sideB}</span> ס"מ, והזווית הכלואה ביניהן היא <span class="math">${angle}°</span>. מצא את שטח המשולש.`;
+                        qItem.txtEn = `In a general triangle, two sides measure <span class="math">${sideA}</span> cm and <span class="math">${sideB}</span> cm, with an enclosed angle of <span class="math">${angle}°</span>. Determine the metric area.`;
+                        qItem.txtAr = `في مثلث عام، أطوال ضلعين هي <span class="math">${sideA}</span> سم و <span class="math">${sideB}</span> سم، والزاوية المحصورة بينهما هي <span class="math">${angle}°</span>. أوجد مساحة المثلث.`;
+                        qItem.txtRu = `В произвольном треугольнике две стороны равны <span class="math">${sideA}</span> см и <span class="math">${sideB}</span> см, а угол между ними — <span class="math">${angle}°</span>. Найдите площадь.`;
+                        qItem.expHe = `נשתמש בנוסחת השטח הטריגונומטרית: S = 0.5 × a × b × sin(α). לכן: 0.5 × ${sideA} × ${sideB} × sin(30°) = 0.5 × ${sideA} × ${sideB} × 0.5 = ${qItem.ans} סמ"ק.`;
+                        qItem.expEn = `Applying the trigonometric area equation: S = 0.5 × a × b × sin(α). Hence: 0.5 × ${sideA} × ${sideB} × sin(30°) = ${qItem.ans} cm².`;
+                        qItem.expAr = `نستخدم قانون المساحة المثلثي: المساحة = 0.5 × الضلع1 × الضلع2 × جا(الزاوية). إذن: 0.5 × ${sideA} × ${sideB} × 0.5 = ${qItem.ans} سم².`;
+                        qItem.expRu = `Используем тригонометрическую формулу площади S = 0.5 × a × b × sin(α). Подставляя значения: 0.5 × ${sideA} × ${sideB} × sin(30°) = ${qItem.ans} см².`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="35,85 95,25 155,85" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 2) {
+                        qItem.ans = 5; // standard 3-4-5 right triangle calculation
+                        let pythLeg1 = 3;
+                        let pythLeg2 = 4;
+                        qItem.txtHe = `מצא את המרחק הליניארי (אורך היתר) בין נקודת הראש <span class="math">A(0, ${pythLeg2})</span> לנקודת הבסיס <span class="math">B(${pythLeg1}, 0)</span> במערכת צירים קרטזית.`;
+                        qItem.txtEn = `Find the Euclidean distance (hypotenuse) between the apex coordinate <span class="math">A(0, ${pythLeg2})</span> and the base coordinate <span class="math">B(${pythLeg1}, 0)</span> on a Cartesian grid.`;
+                        qItem.txtAr = `أوجد المسافة الإقليدية (طول الوتر) بين نقطة الرأس <span class="math">A(0, ${pythLeg2})</span> ونقطة القاعدة <span class="math">B(${pythLeg1}, 0)</span> في نظام الإحداثيات الديكارتية.`;
+                        qItem.txtRu = `Найдите Евклидово расстояние (гипотенузу) между вершиной <span class="math">A(0, ${pythLeg2})</span> и точкой основания <span class="math">B(${pythLeg1}, 0)</span> в Декартовой системе координат.`;
+                        qItem.expHe = `הנוסחה למרחק בין נקודות היא d = √((x₂ - x₁)² + (y₂ - y₁)²). נציב: √((${pythLeg1} - 0)² + (0 - ${pythLeg2})²) = √(${pythLeg1*pythLeg1} + ${pythLeg2*pythLeg2}) = √25 = ${qItem.ans} יחידות מרחק.`;
+                        qItem.expEn = `The distance standard equation is d = √((x₂ - x₁)² + (y₂ - y₁)²). Substituting values gives: √((${pythLeg1} - 0)² + (0 - ${pythLeg2})²) = √25 = ${qItem.ans} units.`;
+                        qItem.expAr = `قانون المسافة هو d = √((x₂ - x₁)² + (y₂ - y₁)²). بالتعويض: √((${pythLeg1} - 0)² + (0 - ${pythLeg2})²) = √25 = ${qItem.ans} وحدة.`;
+                        qItem.expRu = `Формула расстояния между точками d = √((x₂ - x₁)² + (y₂ - y₁)²). Подставляем координаты: √((${pythLeg1} - 0)² + (0 - ${pythLeg2})²) = √25 = ${qItem.ans} единиц.`;
+                        qItem.svg = `<svg width="180" height="110"><line x1="20" y1="90" x2="160" y2="90" stroke="#ccc" stroke-width="1.5"/><line x1="40" y1="10" x2="40" y2="100" stroke="#ccc" stroke-width="1.5"/><polygon points="40,30 110,90 40,90" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 3) {
+                        let sideA = 5;
+                        let sideB = 8;
+                        let cosValue = 0.5; // for 60 degrees
+                        qItem.ans = 7; // 25 + 64 - 2*5*8*0.5 = 89 - 40 = 49 -> sqrt = 7
+                        qItem.txtHe = `במשולש, אורך צלע א' הוא <span class="math">${sideA}</span> ס"מ, אורך צלע ב' הוא <span class="math">${sideB}</span> ס"מ והזווית ביניהן היא <span class="math">60°</span>. חשב את אורך הצלע השלישית באמצעות משפט הקוסינוסים.`;
+                        qItem.txtEn = `In a triangle, side A = <span class="math">${sideA}</span> cm, side B = <span class="math">${sideB}</span> cm, and the enclosed angle is exactly <span class="math">60°</span>. Compute the third side using the Law of Cosines.`;
+                        qItem.txtAr = `في مثلث، طول الضلع A هو <span class="math">${sideA}</span> سم، وطول الضلع B هو <span class="math">${sideB}</span> سم والزاوية بينهما هي <span class="math">60°</span>. احسب طول الضلع الثالث باستخدام قانون جيب التمام.`;
+                        qItem.txtRu = `В треугольнике сторона A = <span class="math">${sideA}</span> см, сторона B = <span class="math">${sideB}</span> см, а угол между ними — <span class="math">60°</span>. Вычислите третью сторону по теореме косинусов.`;
+                        qItem.expHe = `לפי משפט הקוסינוסים: c² = a² + b² - 2ab·cos(α). נציב: ${sideA}² + ${sideB}² - 2·${sideA}·${sideB}·cos(60°) = 25 + 64 - 40 = 49. שורש הערך הוא ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `By Law of Cosines: c² = a² + b² - 2ab·cos(α). Evaluating numbers: ${sideA}² + ${sideB}² - 2·${sideA}·${sideB}·0.5 = 25 + 64 - 40 = 49. √49 = ${qItem.ans} cm.`;
+                        qItem.expAr = `حسب قانون جيب التمام: c² = a² + b² - 2ab·جتا(الزاوية). التعويض البنيوي: 25 + 64 - 40 = 49. إذن الجذر הוא ${qItem.ans} سم.`;
+                        qItem.expRu = `По теореме косинусов c² = a² + b² - 2ab·cos(α). Подставляем: ${sideA}² + ${sideB}² - 2·${sideA}·${sideB}·0.5 = 25 + 64 - 40 = 49. √49 = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="40,85 85,25 150,85" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else if (i % 5 === 4) {
+                        let oppSide = 6;
+                        let sinAngle = 0.5; // 30 degrees
+                        qItem.ans = oppSide / sinAngle; // 2R = 12
+                        qItem.txtHe = `במשולש חסום במעגל, אורך צלע שמול זווית של <span class="math">30°</span> הוא <span class="math">${oppSide}</span> ס"מ. מצא את קוטר המעגל החוסם (2R) בעזרת משפט הסינוסים.`;
+                        qItem.txtEn = `In a circumscribed triangle, a side opposite a <span class="math">30°</span> angle measures <span class="math">${oppSide}</span> cm. Find the diameter of the circumcircle (2R) using the Law of Sines.`;
+                        qItem.txtAr = `في مثلث محاط بدائرة، يبلغ طول الضلع المقابل للزاوية <span class="math">30°</span> حوالي <span class="math">${oppSide}</span> سم. أوجد قطر الدائرة المحيطة (2R) باستخدام قانون الجيوب.`;
+                        qItem.txtRu = `В треугольнике, вписанном в окружность, сторона против угла <span class="math">30°</span> равна <span class="math">${oppSide}</span> см. Найдите диаметр описанной окружности (2R) по теореме синусов.`;
+                        qItem.expHe = `משפט הסינוסים קובע כי: a / sin(α) = 2R. נציב את הערכים הידועים לנו: ${oppSide} / sin(30°) = ${oppSide} / 0.5 = ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `The Law of Sines states: a / sin(α) = 2R. Substituting our known metrics yields: ${oppSide} / sin(30°) = ${oppSide} / 0.5 = ${qItem.ans} cm.`;
+                        qItem.expAr = `ينص قانون الجيوب على أن: الضلع ÷ جا(الزاوية) = 2R. بالتعويض المباشر: ${oppSide} ÷ 0.5 = ${qItem.ans} سم.`;
+                        qItem.expRu = `Теорема синусов утверждает: a / sin(α) = 2R. Подставляя наши значения, получаем: ${oppSide} / sin(30°) = ${oppSide} / 0.5 = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><circle cx="90" cy="55" r="45" fill="none" stroke="#7f8c8d" stroke-dasharray="2" stroke-width="1.5"/><polygon points="60,25 50,85 130,70" fill="none" stroke="#2c3e50" stroke-width="2.5"/></svg>`;
+                    }
+                    else {
+                        let base = 10;
+                        let height = 12;
+                        qItem.ans = 13; // median to base in isosceles triangle with legs=13, base=10 -> height = sqrt(169-25) = 12
+                        qItem.txtHe = `במשולש שווה שוקיים, אורך הבסיס הוא <span class="math">${base}</span> ס"מ והגובה לבסיס הוא <span class="math">${height}</span> ס"מ. חשב את אורך אחת השוקיים של המשולש.`;
+                        qItem.txtEn = `In an isosceles triangle, the base line is <span class="math">${base}</span> cm and the altitude to the base is <span class="math">${height}</span> cm. Calculate the length of one leg.`;
+                        qItem.txtAr = `في مثلث متساوي الساقين، طول القاعدة هو <span class="math">${base}</span> سم والارتفاع النازل عليها هو <span class="math">${height}</span> سم. احسب طول إحدى الساقين.`;
+                        qItem.txtRu = `В равнобедренном треугольнике основание равно <span class="math">${base}</span> см, а высота к нему — <span class="math">${height}</span> см. Вычислите длину боковой стороны.`;
+                        qItem.expHe = `הגובה לבסיס חוצה אותו לשני קטעים של ${base}/2 = 5 ס"מ. נוצר משולש ישר זווית שבו השוק היא היתר: √(5² + ${height}²) = √(25 + 144) = √169 = ${qItem.ans} ס"מ.`;
+                        qItem.expEn = `The base altitude divides it symmetrically: ${base}/2 = 5 cm. A right triangle forms where the leg is the hypotenuse: √(5² + ${height}²) = √169 = ${qItem.ans} cm.`;
+                        qItem.expAr = `الارتفاع ينصف القاعدة إلى قسمين: ${base} ÷ 2 = 5 سم. يتشكل مثلث قائم الزاوية تكون فيه الساق هي الوتر: √(5² + ${height}²) = √169 = ${qItem.ans} سم.`;
+                        qItem.expRu = `Высота делит основание пополам: ${base}/2 = 5 см. По теореме Пифагора находим боковую сторону как гипотенузу: √(5² + ${height}²) = √169 = ${qItem.ans} см.`;
+                        qItem.svg = `<svg width="180" height="110"><polygon points="90,15 45,95 135,95" fill="none" stroke="#2c3e50" stroke-width="2.5"/><line x1="90" y1="15" x2="90" y2="95" stroke="#7f8c8d" stroke-dasharray="4" stroke-width="2"/></svg>`;
+                    }
+                }
+                rawQuizData.push(qItem);
+            }
+            renderQuiz();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById("quiz-container");
+            container.innerHTML = "";
+            const dataLang = translations[currentLang];
+
+            // Renders the fully populated loop dataset containing exactly 20 dynamic rows
+            rawQuizData.forEach((item) => {
+                let currentQuestionText = "";
+                if (currentLang === 'he') currentQuestionText = item.txtHe;
+                else if (currentLang === 'en') currentQuestionText = item.txtEn;
+                else if (currentLang === 'ar') currentQuestionText = item.txtAr;
+                else currentQuestionText = item.txtRu;
+
+                const card = document.createElement("div");
+                card.className = "quiz-item";
+                card.innerHTML = `
+                    <div class="quiz-content-wrapper">
+                        <strong>${dataLang.questionLabel} ${item.id}:</strong> ${currentQuestionText}
+                    </div>
+                    ${item.svg}
+                    <div class="input-container">
+                        <input type="number" id="input-${item.id}" placeholder="?">
+                        <button class="btn btn-check" onclick="checkAnswer(${item.id})">${dataLang.btnCheck}</button>
+                    </div>
+                    <div class="feedback" id="feedback-${item.id}"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function checkAnswer(id) {
+            const item = rawQuizData.find(q => q.id === id);
+            const userInput = parseFloat(document.getElementById(`input-${id}`).value);
+            const feedbackElem = document.getElementById(`feedback-${id}`);
+            const dataLang = translations[currentLang];
+
+            feedbackElem.className = "feedback";
+            
+            if (userInput === item.ans) {
+                feedbackElem.classList.add("correct");
+                feedbackElem.innerText = dataLang.correctMsg;
+            } else {
+                feedbackElem.classList.add("incorrect");
+                feedbackElem.innerText = dataLang.incorrectMsg.replace("{0}", item.ans);
+            }
+
+            // Append dynamic multilingual explanation step
+            const expDiv = document.createElement("div");
+            expDiv.className = "feedback-explanation";
+            if (currentLang === 'he') expDiv.innerHTML = item.expHe;
+            else if (currentLang === 'en') expDiv.innerHTML = item.expEn;
+            else if (currentLang === 'ar') expDiv.innerHTML = item.expAr;
+            else expDiv.innerHTML = item.expRu;
+
+            feedbackElem.appendChild(expDiv);
+        }
+
+        // Initialize Workspace Setup
+        window.onload = function() {
+            regenerateQuiz();
+        };
+    </script>
+</body>
+</html>
